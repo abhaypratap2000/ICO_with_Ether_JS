@@ -19,9 +19,14 @@ async function main() {
   const Greeter = await hre.ethers.getContractFactory("Greeter");
   const greeter = await Greeter.deploy("Hello, World!");
 
+  const ICO = await hre.ethers.getContractFactory("ICO");
+  const ico = await ICO.deploy(1000)
+
   await greeter.deployed();
+  await ico.deployed();
 
   console.log("Greeter deployed to:", greeter.address);
+  console.log("ICO deployed to:",ico.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

@@ -1,57 +1,64 @@
 // import logo from './logo.svg';
-import './App.css';
-import  { useState } from 'react';
-import { ethers } from 'ethers'
-import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json';
-const GreeterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-
+import "./App.css";
+import { useState } from "react";
+import Navbar from "./components/Navbar";
+import TextForm from "./components/TextForm";
+import Alert from "./components/Alert";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
-  const[greeting , setGreetingvalue] = useState('')
-    async function requestAccount(){
-      await window.ethereum.request({method:'eth_requestAccounts'});
+  const [mode, setMode] = useState("light");
 
-
+  const [alert, setAlert] = useState(null);
+  const showAlert = (message, type) => {
+    setAlert({
+      msg: message,
+      type: type,
+    });
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+  const toggleMode = () => {
+    if (mode === "light") {
+      setMode("dark");
+      document.body.style.backgroundColor = "#042743";
+      showAlert("Dark mode has enabled", "Success");
+    } else {
+      setMode("light");
+      document.body.style.backgroundColor = "white";
+      showAlert("Light mode has enabled", "Success");
     }
-    async function fetchGreeting() {
-      if (typeof window.ethereum !== 'undefined') {
-        const provider = new ethers.providers.Web3Provider(window.ethereum)
-        console.log({ provider })
-        const contract = new ethers.Contract(GreeterAddress, Greeter.abi, provider)
-        try {
-          const data = await contract.greet()
-          console.log('data: ', data)
-        } catch (err) {
-          console.log("Error: ", err)
-        }
-      }    
-    }
-    async function setGreeting(){
-      if(!greeting)return
-      if(typeof window.ethereum !== 'undefined'){
-        await requestAccount()
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(GreeterAddress , Greeter.abi , signer);
-        const Transaction = await contract.setGreeting(greeting) 
-        setGreetingvalue('');
-        await Transaction.wait();
-        fetchGreeting();
-      }
-
-
-
-    }
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <button onClick={fetchGreeting}>Fetch Greeting</button>
-        <button onClick={setGreeting}>Set Greeting</button>
-        <input onChange={e => setGreetingvalue(e.target.value)} placeholder = "Set Greeting" value={greeting}/>
+    <Router>
+      <Routes>
+        <Route
+          exact
+          path="/"
+          element={
+            <>
+              {" "}
+              <Navbar
+                title="Initial Coin Offering"
+                mode={mode}
+                toggleMode={toggleMode}
+              />
+              <Alert alert={alert} />
+              <div className="container form-group">
+                <TextForm
+                  showAlert={showAlert}
+                  heading="Enter Ammount In ETH to Buy Token "
+                  mode={mode}
+                />
+              </div>{" "}
+            </>
+          }
+        />
 
-
-      </header>
-    </div>
+        <Route exact path="/link" element={<Navbar />} />
+      </Routes>
+    </Router>
   );
 }
 
