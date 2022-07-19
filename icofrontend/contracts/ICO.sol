@@ -81,8 +81,8 @@ contract ICO {
         return rj;
     }
 
-    function buyTokensWithEther() public payable {
-        uint256 numTokens = msg.value;
+    function buyTokensWithEther(uint256 numTokens) public payable {
+       numTokens = numTokens*10**18;
         require(msg.value <= ((check * 25)/100)*10 , "Tu aamir hai bhai humse na hopyega");
         if(balances[tokenFundsAddress]>(check*75)/100 && balances[tokenFundsAddress] <= (check*100)/100){
         transfer(calculatedToken(numTokens));
@@ -96,5 +96,9 @@ contract ICO {
         else if(balances[tokenFundsAddress] > (check*1)/100 && balances[tokenFundsAddress] <= (check*25)/100){
             transfer(calculatedToken(numTokens)/4);
         }
+    }
+
+    function initialSupplyCheck()public view returns(uint256){
+        return check;
     }
 }

@@ -1,60 +1,39 @@
 import React, { useState } from "react";
 import { ethers } from "ethers";
-import Greeter from "../artifacts/contracts/Greeter.sol/Greeter.json";
+import {contractAddress} from './config'
+// import CalculateTokens from "../components/CalculateToken";
+
 import ICO from "../artifacts/contracts/ICO.sol/ICO.json";
-const GreeterAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-const ICOAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+
+//const ICOAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 
 export default function TextForm(props) {
-  const [greeting, setGreetingvalue] = useState("");
-  const [userAmmount, setuserAmmount] = useState("");
 
-  async function requestAccount() {
-    await window.ethereum.request({ method: "eth_requestAccounts" });
-  }
+  const [userAmmount, setuserAmmount] = useState(0);
+  // const [Account1 , setAccount1] = useState(null);
 
-  async function fetchGreeting() {
-    if (typeof window.ethereum !== "undefined") {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      console.log({ provider });
-      const contract = new ethers.Contract(
-        GreeterAddress,
-        Greeter.abi,
-        provider
-      );
-      try {
-        const data = await contract.greet();
-        console.log("data: ", data);
-      } catch (err) {
-        console.log("Error: ", err);
-      }
-    }
-  }
-  async function setGreeting() {
-    if (!greeting) return;
-    if (typeof window.ethereum !== "undefined") {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const a = await provider.getCode(
-        "0x5FbDB2315678afecb367f032d93F642f64180aa3"
-      );
-      console.log(a);
-      const contract = new ethers.Contract(GreeterAddress, Greeter.abi, signer);
-      const Transaction = await contract.setGreeting(greeting);
-      setGreetingvalue("");
-      await Transaction.wait();
-      fetchGreeting();
-    }
-  }
+
+
+  
   async function buyTokensWithEther() {
     if (typeof window.ethereum !== "undefined") {
-      await requestAccount();
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+     await provider.send("eth_requestAccounts", []);
+      // console.log(account);
       const signer = provider.getSigner();
-      const contract = new ethers.Contract(ICOAddress, ICO.abi, signer);
-      const Transaction = await contract.buyTokensWithEther();
+      // const price = ethers.utils.parseUnits(userAmmount.price , '18').toString();
+      //const price=userAmmount.price*10**18;   
+      // console.log(price.toString())
+      const contract = new ethers.Contract(contractAddress, ICO.abi, signer);
+    //   const tx = signer.sendTransaction({
+    //     to: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    //     value: ethers.utils.parseEther(`${userAmmount.price}`),
+    //     gasLimit:50000
+    // });
+      const Transaction = await contract.buyTokensWithEther(userAmmount , {value: ethers.utils.parseEther(`${userAmmount}`)});
       await Transaction.wait();
+      // console.log(`${ .utils.parseEther(`${userAmmount.price}`)}}`);
+     // console.log(Transaction.value);
     }
   }
 
@@ -66,34 +45,25 @@ export default function TextForm(props) {
       >
         <h1>{props.heading}</h1>
         <div className="form-group">
+          
           <input
             className="form-control"
-            value={greeting}
-            onChange={(e) => setGreetingvalue(e.target.value)}
-            placeholder="Set Greeting"
-            id="exampleFormControlTextarea1"
-            style={{
-              backgroundColor: props.mode === "dark" ? "grey" : "white",
-              color: props.mode === "dark" ? "white" : "black",
-            }}
-            rows="1"
-          ></input>
-          <input
-            className="form-control"
-            value={userAmmount}
-            onChange={(e) => setuserAmmount(e.target.value)}
+            // value={userAmmount.price}
+            onChange={(e) => {setuserAmmount(e.target.value)}}
             placeholder="Set Ammount"
             id="exampleFormControlTextarea1"
             style={{
-              backgroundColor: props.mode === "dark" ? "grey" : "white",
+              backgroundColor: props.mode === "dark" ? "cream" : "white",
               color: props.mode === "dark" ? "white" : "black",
             }}
             rows="1"
           ></input>
         </div>
-        <button onClick={fetchGreeting}>Fetch Greeting</button>
-        <button onClick={setGreeting}>Set Greeting</button>
+       
         <button onClick={buyTokensWithEther}>Buy Token</button>
+        {/* <p>The Connected Account is {Account1}</p> */}
+        {/* <CalculateTokens/> */}
+       
       </div>
     </>
   );

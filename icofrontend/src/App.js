@@ -4,6 +4,8 @@ import { useState } from "react";
 import Navbar from "./components/Navbar";
 import TextForm from "./components/TextForm";
 import Alert from "./components/Alert";
+import CalculateTokens from "./components/CalculateToken";
+import GetBalance from "./components/GetBalance";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
@@ -38,7 +40,7 @@ function App() {
           path="/"
           element={
             <>
-              {" "}
+              
               <Navbar
                 title="Initial Coin Offering"
                 mode={mode}
@@ -48,10 +50,13 @@ function App() {
               <div className="container form-group">
                 <TextForm
                   showAlert={showAlert}
-                  heading="Enter Ammount In ETH to Buy Token "
+                  heading="Enter Amount In ETH to Buy Token "
                   mode={mode}
                 />
-              </div>{" "}
+              </div>
+              <GetBalance/>
+              <CalculateTokens/>
+            
             </>
           }
         />
